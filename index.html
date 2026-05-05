@@ -1,73 +1,418 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <style>
-    body { font-family: 'Segoe UI', sans-serif; background-color: #f9f9f9; padding: 20px; color: #333; }
-    .container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .header { border-bottom: 2px solid #004aad; padding-bottom: 10px; margin-bottom: 20px; }
-    .header h2 { color: #004aad; margin: 0; }
-    .section-title { color: #004aad; font-weight: bold; margin-top: 30px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 8px; font-size: 14px; }
-    th { background-color: #004aad; color: white; }
-  </style>
+<meta charset="UTF-8">
+<title>IRRF Profissional</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 20px;
+    background: #f4f6f9;
+    font-size: 13px;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.no-print-area {
+    max-width: 800px;
+    margin: 20px auto;
+    display: flex;
+    gap: 10px;
+}
+
+h1 {
+    text-align: center;
+    color: #003d6b;
+    border-bottom: 2px solid #003d6b;
+    padding-bottom: 10px;
+}
+
+h2 {
+    background: #e9ecef;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: 20px;
+    font-size: 16px;
+    color: #003d6b;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+}
+
+th, td {
+    padding: 10px 18px;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    width: 45%;
+    text-align: left;
+    color: #555;
+}
+
+td {
+    text-align: right;
+}
+
+input {
+    width: 100%;
+    padding: 6px;
+    text-align: right;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    flex: 1;
+    padding: 12px;
+    background: #003d6b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.btn-pdf {
+    background: #28a745;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #fff;
+}
+
+.label-destaque {
+    font-weight: bold;
+    color: #003d6b;
+}
+
+.valor-destaque {
+    font-weight: bold;
+    font-size: 15px;
+    color: #0a58ca;
+}
+
+.badge-blue { background:#003d6b; }
+.badge-green { background:#28a745; }
+
+.highlight-final {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0a58ca;
+}
+
+#auditoria {
+    background: #222;
+    color: #00ff90;
+    padding: 15px;
+    font-family: 'Courier New', monospace;
+    white-space: pre;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Análise */
+.analise-positiva { color:#28a745; font-weight:bold; }
+.analise-neutra { color:#6c757d; font-weight:bold; }
+
+.grupo-header td {
+    background: #f1f3f5;
+    font-weight: bold;
+    color: #003d6b;
+    padding: 6px 10px;
+    border-top: 2px solid #dee2e6;
+}
+
+/* PDF MODE */
+/* ===== AJUSTE FINO PDF ===== */
+.pdf-mode body {
+    background: #fff !important;
+}
+
+.pdf-mode .container {
+    padding: 10px 12px;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* REDUZ ALTURA DAS LINHAS */
+.pdf-mode table {
+    margin-bottom: 8px;
+}
+
+.pdf-mode th,
+.pdf-mode td {
+    padding: 6px 4px; /* 🔥 reduz altura */
+}
+
+/* REDUZ INPUTS (evita “caixa gigante”) */
+.pdf-mode input {
+    height: 20px;
+    padding: 2px 4px;
+    font-size: 11px;
+}
+
+/* TITULOS MAIS COMPACTOS */
+.pdf-mode h1 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.pdf-mode h2 {
+    font-size: 13px;
+    padding: 5px 8px;
+    margin-top: 10px;
+}
+
+/* LOG MAIS COMPACTO */
+.pdf-mode #auditoria {
+    white-space: pre-wrap;   /* 🔥 evita overflow */
+    word-break: break-word;  /* 🔥 quebra segura */
+    overflow-wrap: break-word;
+}
+
+/* REMOVE BOTÕES */
+.pdf-mode .no-print-area {
+    display: none !important;
+}
+
+.pdf-mode #conteudo {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box; /* 🔥 ESSENCIAL */
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="header">
-      <h2>Solicitação de Custeio – Evento Técnico Delphi</h2>
-    </div>
 
-    <p>Prezados Senhores da <strong>Layout Sistemas e Processamento de Dados LTDA.</strong>,</p>
+<div class="container" id="conteudo">
 
-    <p>Solicito apoio para participação no <strong>2º Delphi Noroeste Paulista</strong>, que acontecerá em <strong>30/05/2025</strong>, em <strong>São José do Rio Preto – SP</strong>, representando nossa equipe de desenvolvimento Delphi.</p>
+<h1>Simulação de IRRF</h1>
 
-    <div class="section-title">🧠 Sobre o Evento</div>
-    <p>
-      O <strong>2º Delphi Noroeste Paulista</strong> reúne especialistas da linguagem Delphi para debater avanços técnicos, desenvolvimento multiplataforma com FireMonkey, integração com APIs REST, padrões de arquitetura (MVC/MVVM), testes unitários, performance e muito mais.
-    </p>
+<h2>Dados de Entrada</h2>
+<table>
 
-    <div class="section-title">📅 Grade Técnica</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Horário</th>
-          <th>Atividade / Palestra</th>
-          <th>Palestrante</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>08:00 – 08:30</td><td>Credenciamento e Café</td><td>Organização</td></tr>
-        <tr><td>08:30 – 09:30</td><td>Abertura e Delphi 12 (Athens)</td><td>Especialista Delphi</td></tr>
-        <tr><td>09:30 – 10:30</td><td>FireMonkey Multiplataforma</td><td>Dev Sênior FMX</td></tr>
-        <tr><td>10:45 – 11:45</td><td>Integração REST + FireDAC</td><td>Especialista APIs</td></tr>
-        <tr><td>11:45 – 12:30</td><td>Padrões MVC / MVVM</td><td>Consultor Arquiteto</td></tr>
-        <tr><td>14:00 – 15:00</td><td>Performance e Debugging</td><td>Eng. de Software</td></tr>
-        <tr><td>15:00 – 16:00</td><td>Testes Unitários em Delphi</td><td>Dev QA</td></tr>
-        <tr><td>16:15 – 17:15</td><td>Casos Reais de Sucesso</td><td>Líder de Projeto</td></tr>
-        <tr><td>17:15 – 18:00</td><td>Encerramento e Networking</td><td>Organização</td></tr>
-      </tbody>
-    </table>
+<!-- 🔵 RENDIMENTOS -->
+<tr class="grupo-header">
+    <td colspan="2">Rendimentos</td>
+</tr>
+<tr><th>Renda Tributável</th><td><input id="rendimentos"></td></tr>
 
-    <div class="section-title">📌 Justificativa</div>
-    <p>
-      A presença no evento trará ganhos técnicos à equipe Delphi da Layout Sistemas, com aplicação direta em nossos sistemas. Pretendo compartilhar os aprendizados via treinamentos internos, além de aplicar práticas modernas que otimizem a qualidade e a performance dos nossos projetos.
-    </p>
+<!-- 🟢 DEDUÇÕES -->
+<tr class="grupo-header">
+    <td colspan="2">Deduções</td>
+</tr>
+<tr><th>INSS</th><td><input id="inss"></td></tr>
+<tr><th>Dependentes</th><td><input id="dependentes" type="number" value="0"></td></tr>
+<tr><th>Pensão</th><td><input id="pensao"></td></tr>
+<tr><th>Isenção 65+</th><td><input id="isencao"></td></tr>
 
-    <div class="section-title">💰 Investimento Estimado</div>
-    <ul>
-      <li>Passagens aéreas Fortaleza – SP (ida e volta)</li>
-      <li>Hospedagem (30/05 a 31/05)</li>
-      <li>Inscrição no evento</li>
-      <li>Deslocamento e alimentação</li>
-    </ul>
+<!-- 🟠 MÚLTIPLOS -->
+<tr class="grupo-header">
+    <td colspan="2">Outros Vínculos</td>
+</tr>
+<tr><th>INSS múltiplo</th><td><input id="inssMulti"></td></tr>
+<tr><th>IRRF já retido</th><td><input id="irrfOutros"></td></tr>
 
-    <p>Fico à disposição para qualquer esclarecimento e para envio de relatório pós-evento com aprendizados e propostas de aplicação prática.</p>
+</table>
 
-    <p>Atenciosamente,</p>
+<h2>Base de Cálculo</h2>
+<table>
+<tr>
+    <th class="label-destaque">Renda Bruta</th>
+    <td id="rendaCalc" class="valor-destaque">-</td>
+</tr>
+<tr><th>Total de Deduções</th><td id="deducoes">-</td></tr>
+<tr><th><span class="badge badge-green">Base IRRF</span></th><td id="base">-</td></tr>
+</table>
 
-    <p><strong>Angllys Bandeira Soares</strong><br>Analista de Sistemas – Equipe Delphi<br>Layout Sistemas e Processamento de Dados LTDA.</p>
-  </div>
+<h2>Resultado do Imposto</h2>
+<table>
+<tr><th>Faixa de Alíquota</th><td id="faixa">-</td></tr>
+<tr><th>Imposto Bruto</th><td id="imposto">-</td></tr>
+<tr><th>Redução por Lei</th><td id="reducao">-</td></tr>
+<tr><th>IRRF Líquido a Reter</th><td id="irrf" class="highlight-final">-</td></tr>
+<tr><th>Análise do Cálculo</th><td id="analise">-</td></tr>
+</table>
+
+<h2>Log de Auditoria</h2>
+<div id="auditoria"></div>
+
+</div>
+
+<div class="no-print-area">
+<button onclick="calcular()">Calcular</button>
+<button class="btn-pdf" onclick="gerarPDF()">Exportar PDF</button>
+</div>
+
+<script>
+
+function el(id){ return document.getElementById(id); }
+
+function parseBR(v){
+    if(!v) return 0;
+    return parseFloat(v.replace(/\./g,'').replace(',','.')) || 0;
+}
+
+function formatBR(v){
+    return Number(v)
+        .toFixed(2) // 🔥 força 2 casas
+        .replace('.',',')
+        .replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+
+function mask(input){
+    input.addEventListener("input", function(){
+        let v=this.value.replace(/\D/g,'');
+        if(!v){this.value='';return;}
+        v=(parseInt(v)/100).toFixed(2);
+        v=v.replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+        this.value=v;
+    });
+}
+
+function tabela(){
+return [
+{cod:"F1",min:0,max:2428.80,aliq:0,ded:0},
+{cod:"F2",min:2428.81,max:2826.65,aliq:7.5,ded:182.16},
+{cod:"F3",min:2826.66,max:3751.05,aliq:15,ded:394.16},
+{cod:"F4",min:3751.06,max:4664.68,aliq:22.5,ded:675.49},
+{cod:"F5",min:4664.69,max:999999999,aliq:27.5,ded:908.73}
+];
+}
+
+function calcularReducaoLei(renda, imposto){
+    if(renda<=5000) return imposto;
+    if(renda<=7350){
+        let r=978.62-(0.133145*renda);
+        return Math.max(0,Math.min(r,imposto));
+    }
+    return 0;
+}
+
+function calcular(){
+
+let renda=parseBR(el("rendimentos").value);
+let inss=parseBR(el("inss").value);
+let inssM=parseBR(el("inssMulti").value);
+let dep=parseInt(el("dependentes").value||0)*189.59;
+let pensao=parseBR(el("pensao").value);
+let isencao=parseBR(el("isencao").value);
+let irrfOutros=parseBR(el("irrfOutros").value);
+
+let deducoes=inss+inssM+dep+pensao+isencao;
+let base=Math.max(0,renda-deducoes);
+
+let f=tabela().find(x=>base>=x.min && base<=x.max);
+let imposto=Math.max(0,(base*(f.aliq/100))-f.ded);
+let reducao=calcularReducaoLei(renda,imposto);
+let irrfFinal = Math.max(0, imposto - reducao - irrfOutros);
+irrfFinal = Number(irrfFinal.toFixed(2));
+
+// ANALISE
+let irrfSemLei=Math.max(0,imposto-irrfOutros);
+let economia=irrfSemLei-irrfFinal;
+let perc=irrfSemLei>0?(economia/irrfSemLei)*100:0;
+
+let texto,classe;
+if(economia>0){
+    texto=`Vantagem: R$ ${formatBR(economia)} (${perc.toFixed(2)}%)`;
+    classe="analise-positiva";
+}else{
+    texto="Sem benefício";
+    classe="analise-neutra";
+}
+
+el("analise").innerHTML=`<span class="${classe}">${texto}</span>`;
+
+// OUTPUT
+el("rendaCalc").innerHTML=`R$ ${formatBR(renda)}`;
+el("deducoes").innerHTML=`R$ ${formatBR(deducoes)}`;
+el("base").innerHTML=`R$ ${formatBR(base)}`;
+el("faixa").innerHTML=`<span class='badge badge-blue'>${f.cod}</span> ${f.aliq}%`;
+el("imposto").innerHTML=`R$ ${formatBR(imposto)}`;
+el("reducao").innerHTML=`R$ ${formatBR(reducao)}`;
+el("irrf").innerHTML=`R$ ${formatBR(irrfFinal)}`;
+
+// LOG alinhado
+function pad(t,n){return t.padEnd(n,' ');}
+function linha(l,v){return `${pad(l,22)} : R$ ${v.padStart(10,' ')}`;}
+
+el("auditoria").innerText =
+`--- RELATÓRIO DE CÁLCULO ---
+
+${linha("Renda Tributável",formatBR(renda))}
+${linha("Total Deduções",formatBR(deducoes))}
+${linha("Base de Cálculo",formatBR(base))}
+${pad("Alíquota Aplicada",22)} : ${f.aliq}% (Faixa ${f.cod})
+${linha("Imposto Base",formatBR(imposto))}
+${linha("Redução por Lei",formatBR(reducao))}
+${linha("IRRF Líquido Final",formatBR(irrfFinal))}`;
+}
+
+function gerarPDF(){
+
+    document.activeElement.blur();
+    document.body.classList.add("pdf-mode");
+
+    const opt = {
+        margin: [6, 6, 6, 6],
+        filename: 'IRRF.pdf',
+
+        image: { type: 'jpeg', quality: 0.98 },
+
+        html2canvas: {
+            scale: 1.3,
+            useCORS: true,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: document.body.scrollWidth
+        },
+
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
+        },
+
+        pagebreak: {
+            mode: ['css', 'legacy'],
+            avoid: ['#auditoria']
+        }
+    };
+
+    html2pdf()
+        .set(opt)
+        .from(document.getElementById("conteudo"))
+        .save()
+        .then(() => {
+            document.body.classList.remove("pdf-mode");
+        });
+}
+
+window.onload=function(){
+["rendimentos","inss","inssMulti","pensao","isencao","irrfOutros"]
+.forEach(id=>mask(el(id)));
+};
+
+</script>
+
 </body>
 </html>
