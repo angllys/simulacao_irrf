@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <title>IRRF Profissional</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 body {
@@ -140,62 +142,21 @@ button {
 }
 
 /* PDF MODE */
-/* ===== AJUSTE FINO PDF ===== */
-.pdf-mode body {
-    background: #fff !important;
-}
-
-.pdf-mode .container {
-    padding: 10px 12px;
-    margin: 0;
-    box-shadow: none;
-}
-
-/* REDUZ ALTURA DAS LINHAS */
-.pdf-mode table {
-    margin-bottom: 8px;
-}
-
-.pdf-mode th,
-.pdf-mode td {
-    padding: 6px 4px; /* 🔥 reduz altura */
-}
-
-/* REDUZ INPUTS (evita “caixa gigante”) */
-.pdf-mode input {
-    height: 20px;
-    padding: 2px 4px;
-    font-size: 11px;
-}
-
-/* TITULOS MAIS COMPACTOS */
-.pdf-mode h1 {
-    font-size: 16px;
-    margin-bottom: 8px;
-}
-
-.pdf-mode h2 {
-    font-size: 13px;
-    padding: 5px 8px;
-    margin-top: 10px;
-}
-
-/* LOG MAIS COMPACTO */
-.pdf-mode #auditoria {
-    white-space: pre-wrap;   /* 🔥 evita overflow */
-    word-break: break-word;  /* 🔥 quebra segura */
-    overflow-wrap: break-word;
-}
-
-/* REMOVE BOTÕES */
-.pdf-mode .no-print-area {
-    display: none !important;
-}
-
-.pdf-mode #conteudo {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box; /* 🔥 ESSENCIAL */
+@media print {
+    body { 
+        margin: 0; 
+        font-size: 12.5px; 
+    }
+    .container {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    table {
+        page-break-inside: auto;
+    }
+    tr, td, th {
+        page-break-inside: avoid;
+    }
 }
 </style>
 </head>
@@ -219,7 +180,7 @@ button {
 <tr class="grupo-header">
     <td colspan="2">Deduções</td>
 </tr>
-<tr><th>INSS</th><td><input id="inss"></td></tr>
+<tr><th>Previdência INSS/IPM</th><td><input id="inss"></td></tr>
 <tr><th>Dependentes</th><td><input id="dependentes" type="number" value="0"></td></tr>
 <tr><th>Pensão</th><td><input id="pensao"></td></tr>
 <tr><th>Isenção 65+</th><td><input id="isencao"></td></tr>
@@ -228,7 +189,7 @@ button {
 <tr class="grupo-header">
     <td colspan="2">Outros Vínculos</td>
 </tr>
-<tr><th>INSS múltiplo</th><td><input id="inssMulti"></td></tr>
+<tr><th>Previdência INSS/IPM já retido</th><td><input id="inssMulti"></td></tr>
 <tr><th>IRRF já retido</th><td><input id="irrfOutros"></td></tr>
 
 </table>
@@ -246,7 +207,7 @@ button {
 <h2>Resultado do Imposto</h2>
 <table>
 <tr><th>Faixa de Alíquota</th><td id="faixa">-</td></tr>
-<tr><th>Imposto Bruto</th><td id="imposto">-</td></tr>
+<tr><th>IRRF Bruto</th><td id="imposto">-</td></tr>
 <tr><th>Redução por Lei</th><td id="reducao">-</td></tr>
 <tr><th>IRRF Líquido a Reter</th><td id="irrf" class="highlight-final">-</td></tr>
 <tr><th>Análise do Cálculo</th><td id="analise">-</td></tr>
@@ -276,6 +237,10 @@ function formatBR(v){
         .toFixed(2) // 🔥 força 2 casas
         .replace('.',',')
         .replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+
+function trunc2(v){
+    return Math.floor(v * 100) / 100;
 }
 
 function mask(input){
@@ -324,7 +289,7 @@ let f=tabela().find(x=>base>=x.min && base<=x.max);
 let imposto=Math.max(0,(base*(f.aliq/100))-f.ded);
 let reducao=calcularReducaoLei(renda,imposto);
 let irrfFinal = Math.max(0, imposto - reducao - irrfOutros);
-irrfFinal = Number(irrfFinal.toFixed(2));
+// irrfFinal = Number(irrfFinal.toFixed(2));
 
 // ANALISE
 let irrfSemLei=Math.max(0,imposto-irrfOutros);
@@ -347,9 +312,9 @@ el("rendaCalc").innerHTML=`R$ ${formatBR(renda)}`;
 el("deducoes").innerHTML=`R$ ${formatBR(deducoes)}`;
 el("base").innerHTML=`R$ ${formatBR(base)}`;
 el("faixa").innerHTML=`<span class='badge badge-blue'>${f.cod}</span> ${f.aliq}%`;
-el("imposto").innerHTML=`R$ ${formatBR(imposto)}`;
-el("reducao").innerHTML=`R$ ${formatBR(reducao)}`;
-el("irrf").innerHTML=`R$ ${formatBR(irrfFinal)}`;
+el("imposto").innerHTML=`R$ ${formatBR(trunc2(imposto))}`;
+el("reducao").innerHTML=`R$ ${formatBR(trunc2(reducao))}`;
+el("irrf").innerHTML=`R$ ${formatBR(trunc2(irrfFinal))}`;
 
 // LOG alinhado
 function pad(t,n){return t.padEnd(n,' ');}
@@ -359,52 +324,114 @@ el("auditoria").innerText =
 `--- RELATÓRIO DE CÁLCULO ---
 
 ${linha("Renda Tributável",formatBR(renda))}
+${linha("Previdência",formatBR(inss+inssM))}
+${linha("Dep. IRRF",formatBR(dep))}
+${linha("Pensão",formatBR(pensao))}
+${linha("Isenção 65+",formatBR(isencao))}
 ${linha("Total Deduções",formatBR(deducoes))}
 ${linha("Base de Cálculo",formatBR(base))}
 ${pad("Alíquota Aplicada",22)} : ${f.aliq}% (Faixa ${f.cod})
-${linha("Imposto Base",formatBR(imposto))}
+${linha("IRRF Base",formatBR(trunc2(imposto)))}
 ${linha("Redução por Lei",formatBR(reducao))}
-${linha("IRRF Líquido Final",formatBR(irrfFinal))}`;
+${linha("IRRF já retido",formatBR(irrfOutros))}
+${linha("IRRF Líquido Final",formatBR(trunc2(irrfFinal)))}`;
 }
 
-function gerarPDF(){
+async function gerarPDF() {
+    const conteudo = document.getElementById("conteudo");
 
-    document.activeElement.blur();
-    document.body.classList.add("pdf-mode");
+    try {
+        // Esconde a auditoria temporariamente
+        const auditoria = conteudo.querySelector("#auditoria");
+        const h2Auditoria = auditoria ? auditoria.previousElementSibling : null;
 
-    const opt = {
-        margin: [6, 6, 6, 6],
-        filename: 'IRRF.pdf',
+        if (auditoria) auditoria.style.display = "none";
+        if (h2Auditoria) h2Auditoria.style.display = "none";
 
-        image: { type: 'jpeg', quality: 0.98 },
-
-        html2canvas: {
-            scale: 1.3,
+        // Gera o canvas
+        const canvas = await html2canvas(conteudo, {
+            scale: 2.5,
             useCORS: true,
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: document.body.scrollWidth
-        },
-
-        jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
-        },
-
-        pagebreak: {
-            mode: ['css', 'legacy'],
-            avoid: ['#auditoria']
-        }
-    };
-
-    html2pdf()
-        .set(opt)
-        .from(document.getElementById("conteudo"))
-        .save()
-        .then(() => {
-            document.body.classList.remove("pdf-mode");
+            letterRendering: true,
+            backgroundColor: "#ffffff",
+            logging: false
         });
+
+        // Restaura a auditoria
+        if (auditoria) auditoria.style.display = "";
+        if (h2Auditoria) h2Auditoria.style.display = "";
+
+        // ==================== GERA PDF ====================
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4"
+        });
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = Math.min(pageWidth / imgWidth, (pageHeight * 0.86) / imgHeight);
+
+        const finalWidth = imgWidth * ratio;
+        const finalHeight = imgHeight * ratio;
+
+        // Adiciona conteúdo principal
+        pdf.addImage(canvas.toDataURL("image/jpeg", 0.95), 'JPEG', 
+                    (pageWidth - finalWidth) / 2, 20, finalWidth, finalHeight);
+
+        // ==================== RODAPÉ PROFISSIONAL ====================
+        const agora = new Date();
+        const dataFormatada = agora.toLocaleDateString('pt-BR', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric' 
+        });
+        const horaFormatada = agora.toLocaleTimeString('pt-BR', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(100);
+
+        // Versão (você pode alterar facilmente)
+        const versao = "v1.0.0";
+
+        // Primeira linha - Data, Hora e Versão
+        pdf.setFontSize(9);
+        const linha1 = `Gerado em: ${dataFormatada} às ${horaFormatada} • ${versao}`;
+        pdf.text(linha1, pageWidth / 2, pageHeight - 13, { align: "center" });
+
+        // Segunda linha - Crédito
+        pdf.setFontSize(8);
+        const linha2 = "Idealizado e desenvolvido por Angllys Bandeira Soares • Delphi Developer";
+        pdf.text(linha2, pageWidth / 2, pageHeight - 8, { align: "center" });
+
+        // Linha separadora
+        pdf.setDrawColor(180);
+        pdf.line(20, pageHeight - 16, pageWidth - 20, pageHeight - 16);
+
+        pdf.save("Simulacao_IRRF.pdf");
+
+    } catch (error) {
+        console.error("Erro ao gerar PDF:", error);
+        alert("Erro ao gerar o PDF. Tente novamente.");
+    }
+}
+
+// Função auxiliar para carregar imagem
+function loadImage(url) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = url;
+    });
 }
 
 window.onload=function(){
