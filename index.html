@@ -2,9 +2,8 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>IRRF Profissional</title>
+<title>Simulador do IRRF</title>
 
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -15,38 +14,96 @@ body {
     background: #f4f6f9;
     font-size: 13px;
     color: #333;
+    transition: background 0.4s, color 0.4s;
+    position: relative;
+}
+
+/* ==================== DARK MODE ==================== */
+:root {
+    --bg-body: #f4f6f9;
+    --bg-container: #ffffff;
+    --text-primary: #333;
+    --text-secondary: #555;
+    --header-bg: #e9ecef;
+    --border-color: #eee;
+    --input-bg: #fff;
+    --input-border: #ccc;
+    --accent: #003d6b;
+}
+
+.dark-mode {
+    --bg-body: #0d1117;
+    --bg-container: #161b22;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --header-bg: #21262d;
+    --border-color: #30363d;
+    --input-bg: #0d1117;
+    --input-border: #30363d;
+    --accent: #58a6ff;
+}
+
+body {
+    background: var(--bg-body);
+    color: var(--text-primary);
 }
 
 .container {
     max-width: 800px;
-    margin: auto;
-    background: #fff;
+    margin: 20px auto;
+    background: var(--bg-container);
     padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transition: background 0.4s;
+    border: 1px solid var(--border-color);
 }
 
-.no-print-area {
-    max-width: 800px;
-    margin: 20px auto;
+/* Botão Dark Mode Discreto no Topo Direito */
+#btnDarkMode {
+    position: fixed;
+    top: 25px;
+    right: 30px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(0, 61, 107, 0.9);
+    color: white;
+    border: none;
+    font-size: 20px;
     display: flex;
-    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+}
+
+#btnDarkMode:hover {
+    background: #003d6b;
+    transform: scale(1.08);
+}
+
+.dark-mode #btnDarkMode {
+    background: rgba(255,255,255,0.15);
 }
 
 h1 {
     text-align: center;
-    color: #003d6b;
-    border-bottom: 2px solid #003d6b;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
     padding-bottom: 10px;
 }
 
 h2 {
-    background: #e9ecef;
+    background: var(--header-bg);
     padding: 8px 12px;
     border-radius: 4px;
     margin-top: 20px;
     font-size: 16px;
-    color: #003d6b;
+    color: var(--accent);
+    transition: all 0.4s;
 }
 
 table {
@@ -57,25 +114,42 @@ table {
 
 th, td {
     padding: 10px 18px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
 }
 
 th {
     width: 45%;
     text-align: left;
-    color: #555;
+    color: var(--text-secondary);
 }
 
 td {
     text-align: right;
+    color: var(--text-primary);
 }
 
 input {
     width: 100%;
-    padding: 6px;
+    padding: 8px;
     text-align: right;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    color: var(--text-primary);
+    transition: all 0.3s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+}
+
+.no-print-area {
+    max-width: 800px;
+    margin: 20px auto;
+    display: flex;
+    gap: 10px;
 }
 
 button {
@@ -84,8 +158,9 @@ button {
     background: #003d6b;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     font-weight: bold;
+    transition: all 0.3s;
 }
 
 .btn-pdf {
@@ -101,61 +176,57 @@ button {
 
 .label-destaque {
     font-weight: bold;
-    color: #003d6b;
+    color: var(--accent);
 }
 
 .valor-destaque {
     font-weight: bold;
     font-size: 15px;
-    color: #0a58ca;
+    color: #58a6ff;
 }
 
-.badge-blue { background:#003d6b; }
-.badge-green { background:#28a745; }
+.badge-blue { background: var(--accent); }
+.badge-green { background: #28a745; }
 
 .highlight-final {
     font-size: 18px;
     font-weight: bold;
-    color: #0a58ca;
+    color: #58a6ff;
 }
 
 #auditoria {
-    background: #222;
-    color: #00ff90;
+    background: #0d1117;
+    color: #39ff8f;
     padding: 15px;
     font-family: 'Courier New', monospace;
     white-space: pre;
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 12px;
+    border: 1px solid #30363d;
 }
 
-/* Análise */
-.analise-positiva { color:#28a745; font-weight:bold; }
-.analise-neutra { color:#6c757d; font-weight:bold; }
+.analise-positiva { color:#39ff8f; font-weight:bold; }
+.analise-neutra { color:#8b949e; font-weight:bold; }
 
 .grupo-header td {
-    background: #f1f3f5;
+    background: var(--header-bg);
     font-weight: bold;
-    color: #003d6b;
+    color: var(--text-primary);
     padding: 6px 10px;
-    border-top: 2px solid #dee2e6;
+    border-top: 2px solid var(--border-color);
 }
 
 /* PDF MODE */
 @media print {
+    #btnDarkMode { display: none !important; }
     body { 
         margin: 0; 
-        font-size: 12.5px; 
+        background: white !important;
+        color: black !important;
     }
     .container {
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    table {
-        page-break-inside: auto;
-    }
-    tr, td, th {
-        page-break-inside: avoid;
+        box-shadow: none !important;
+        margin: 0 auto;
     }
 }
 </style>
@@ -163,54 +234,43 @@ button {
 
 <body>
 
+<!-- Botão Dark Mode Discreto -->
+<button id="btnDarkMode" onclick="toggleDarkMode()" title="Alternar Tema Escuro/Claro">🌙</button>
+
 <div class="container" id="conteudo">
 
 <h1>Simulação de IRRF</h1>
 
 <h2>Dados de Entrada</h2>
 <table>
+    <tr class="grupo-header"><td colspan="2">Rendimentos</td></tr>
+    <tr><th>Renda Tributável</th><td><input id="rendimentos"></td></tr>
 
-<!-- 🔵 RENDIMENTOS -->
-<tr class="grupo-header">
-    <td colspan="2">Rendimentos</td>
-</tr>
-<tr><th>Renda Tributável</th><td><input id="rendimentos"></td></tr>
+    <tr class="grupo-header"><td colspan="2">Deduções</td></tr>
+    <tr><th>Previdência INSS/IPM</th><td><input id="inss"></td></tr>
+    <tr><th>Dependentes</th><td><input id="dependentes" type="number" value="0"></td></tr>
+    <tr><th>Pensão</th><td><input id="pensao"></td></tr>
+    <tr><th>Isenção 65+</th><td><input id="isencao"></td></tr>
 
-<!-- 🟢 DEDUÇÕES -->
-<tr class="grupo-header">
-    <td colspan="2">Deduções</td>
-</tr>
-<tr><th>Previdência INSS/IPM</th><td><input id="inss"></td></tr>
-<tr><th>Dependentes</th><td><input id="dependentes" type="number" value="0"></td></tr>
-<tr><th>Pensão</th><td><input id="pensao"></td></tr>
-<tr><th>Isenção 65+</th><td><input id="isencao"></td></tr>
-
-<!-- 🟠 MÚLTIPLOS -->
-<tr class="grupo-header">
-    <td colspan="2">Outros Vínculos</td>
-</tr>
-<tr><th>Previdência INSS/IPM já retido</th><td><input id="inssMulti"></td></tr>
-<tr><th>IRRF já retido</th><td><input id="irrfOutros"></td></tr>
-
+    <tr class="grupo-header"><td colspan="2">Outros Vínculos</td></tr>
+    <tr><th>Previdência INSS/IPM já retido</th><td><input id="inssMulti"></td></tr>
+    <tr><th>IRRF já retido</th><td><input id="irrfOutros"></td></tr>
 </table>
 
 <h2>Base de Cálculo</h2>
 <table>
-<tr>
-    <th class="label-destaque">Renda Bruta</th>
-    <td id="rendaCalc" class="valor-destaque">-</td>
-</tr>
-<tr><th>Total de Deduções</th><td id="deducoes">-</td></tr>
-<tr><th><span class="badge badge-green">Base IRRF</span></th><td id="base">-</td></tr>
+    <tr><th class="label-destaque">Renda Bruta</th><td id="rendaCalc" class="valor-destaque">-</td></tr>
+    <tr><th>Total de Deduções</th><td id="deducoes">-</td></tr>
+    <tr><th><span class="badge badge-green">Base IRRF</span></th><td id="base">-</td></tr>
 </table>
 
 <h2>Resultado do Imposto</h2>
 <table>
-<tr><th>Faixa de Alíquota</th><td id="faixa">-</td></tr>
-<tr><th>IRRF Bruto</th><td id="imposto">-</td></tr>
-<tr><th>Redução por Lei</th><td id="reducao">-</td></tr>
-<tr><th>IRRF Líquido a Reter</th><td id="irrf" class="highlight-final">-</td></tr>
-<tr><th>Análise do Cálculo</th><td id="analise">-</td></tr>
+    <tr><th>Faixa de Alíquota</th><td id="faixa">-</td></tr>
+    <tr><th>IRRF Bruto</th><td id="imposto">-</td></tr>
+    <tr><th>Redução por Lei</th><td id="reducao">-</td></tr>
+    <tr><th>IRRF Líquido a Reter</th><td id="irrf" class="highlight-final">-</td></tr>
+    <tr><th>Análise do Cálculo</th><td id="analise">-</td></tr>
 </table>
 
 <h2>Log de Auditoria</h2>
@@ -219,8 +279,8 @@ button {
 </div>
 
 <div class="no-print-area">
-<button onclick="calcular()">Calcular</button>
-<button class="btn-pdf" onclick="gerarPDF()">Exportar PDF</button>
+    <button onclick="calcular()">Calcular</button>
+    <button class="btn-pdf" onclick="gerarPDF()">Exportar PDF</button>
 </div>
 
 <script>
@@ -234,7 +294,7 @@ function parseBR(v){
 
 function formatBR(v){
     return Number(v)
-        .toFixed(2) // 🔥 força 2 casas
+        .toFixed(2)
         .replace('.',',')
         .replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 }
@@ -254,13 +314,13 @@ function mask(input){
 }
 
 function tabela(){
-return [
-{cod:"F1",min:0,max:2428.80,aliq:0,ded:0},
-{cod:"F2",min:2428.81,max:2826.65,aliq:7.5,ded:182.16},
-{cod:"F3",min:2826.66,max:3751.05,aliq:15,ded:394.16},
-{cod:"F4",min:3751.06,max:4664.68,aliq:22.5,ded:675.49},
-{cod:"F5",min:4664.69,max:999999999,aliq:27.5,ded:908.73}
-];
+    return [
+        {cod:"F1",min:0,max:2428.80,aliq:0,ded:0},
+        {cod:"F2",min:2428.81,max:2826.65,aliq:7.5,ded:182.16},
+        {cod:"F3",min:2826.66,max:3751.05,aliq:15,ded:394.16},
+        {cod:"F4",min:3751.06,max:4664.68,aliq:22.5,ded:675.49},
+        {cod:"F5",min:4664.69,max:999999999,aliq:27.5,ded:908.73}
+    ];
 }
 
 function calcularReducaoLei(renda, imposto){
@@ -273,54 +333,49 @@ function calcularReducaoLei(renda, imposto){
 }
 
 function calcular(){
+    let renda = parseBR(el("rendimentos").value);
+    let inss = parseBR(el("inss").value);
+    let inssM = parseBR(el("inssMulti").value);
+    let dep = parseInt(el("dependentes").value||0) * 189.59;
+    let pensao = parseBR(el("pensao").value);
+    let isencao = parseBR(el("isencao").value);
+    let irrfOutros = parseBR(el("irrfOutros").value);
 
-let renda=parseBR(el("rendimentos").value);
-let inss=parseBR(el("inss").value);
-let inssM=parseBR(el("inssMulti").value);
-let dep=parseInt(el("dependentes").value||0)*189.59;
-let pensao=parseBR(el("pensao").value);
-let isencao=parseBR(el("isencao").value);
-let irrfOutros=parseBR(el("irrfOutros").value);
+    let deducoes = inss + inssM + dep + pensao + isencao;
+    let base = Math.max(0, renda - deducoes);
 
-let deducoes=inss+inssM+dep+pensao+isencao;
-let base=Math.max(0,renda-deducoes);
+    let f = tabela().find(x => base >= x.min && base <= x.max);
+    let imposto = Math.max(0, (base * (f.aliq / 100)) - f.ded);
+    let reducao = calcularReducaoLei(renda, imposto);
+    let irrfFinal = Math.max(0, imposto - reducao - irrfOutros);
 
-let f=tabela().find(x=>base>=x.min && base<=x.max);
-let imposto=Math.max(0,(base*(f.aliq/100))-f.ded);
-let reducao=calcularReducaoLei(renda,imposto);
-let irrfFinal = Math.max(0, imposto - reducao - irrfOutros);
-// irrfFinal = Number(irrfFinal.toFixed(2));
+    let irrfSemLei = Math.max(0, imposto - irrfOutros);
+    let economia = irrfSemLei - irrfFinal;
+    let perc = irrfSemLei > 0 ? (economia / irrfSemLei) * 100 : 0;
 
-// ANALISE
-let irrfSemLei=Math.max(0,imposto-irrfOutros);
-let economia=irrfSemLei-irrfFinal;
-let perc=irrfSemLei>0?(economia/irrfSemLei)*100:0;
+    let texto, classe;
+    if(economia > 0){
+        texto = `Vantagem: R$ ${formatBR(economia)} (${perc.toFixed(2)}%)`;
+        classe = "analise-positiva";
+    } else {
+        texto = "Sem benefício";
+        classe = "analise-neutra";
+    }
 
-let texto,classe;
-if(economia>0){
-    texto=`Vantagem: R$ ${formatBR(economia)} (${perc.toFixed(2)}%)`;
-    classe="analise-positiva";
-}else{
-    texto="Sem benefício";
-    classe="analise-neutra";
-}
+    el("analise").innerHTML = `<span class="${classe}">${texto}</span>`;
 
-el("analise").innerHTML=`<span class="${classe}">${texto}</span>`;
+    el("rendaCalc").innerHTML = `R$ ${formatBR(renda)}`;
+    el("deducoes").innerHTML = `R$ ${formatBR(deducoes)}`;
+    el("base").innerHTML = `R$ ${formatBR(base)}`;
+    el("faixa").innerHTML = `<span class='badge badge-blue'>${f.cod}</span> ${f.aliq}%`;
+    el("imposto").innerHTML = `R$ ${formatBR(trunc2(imposto))}`;
+    el("reducao").innerHTML = `R$ ${formatBR(trunc2(reducao))}`;
+    el("irrf").innerHTML = `R$ ${formatBR(trunc2(irrfFinal))}`;
 
-// OUTPUT
-el("rendaCalc").innerHTML=`R$ ${formatBR(renda)}`;
-el("deducoes").innerHTML=`R$ ${formatBR(deducoes)}`;
-el("base").innerHTML=`R$ ${formatBR(base)}`;
-el("faixa").innerHTML=`<span class='badge badge-blue'>${f.cod}</span> ${f.aliq}%`;
-el("imposto").innerHTML=`R$ ${formatBR(trunc2(imposto))}`;
-el("reducao").innerHTML=`R$ ${formatBR(trunc2(reducao))}`;
-el("irrf").innerHTML=`R$ ${formatBR(trunc2(irrfFinal))}`;
+    function pad(t,n){ return t.padEnd(n,' '); }
+    function linha(l,v){ return `${pad(l,22)} : R$ ${v.padStart(10,' ')}`; }
 
-// LOG alinhado
-function pad(t,n){return t.padEnd(n,' ');}
-function linha(l,v){return `${pad(l,22)} : R$ ${v.padStart(10,' ')}`;}
-
-el("auditoria").innerText =
+    el("auditoria").innerText = 
 `--- RELATÓRIO DE CÁLCULO ---
 
 ${linha("Renda Tributável",formatBR(renda))}
@@ -341,14 +396,12 @@ async function gerarPDF() {
     const conteudo = document.getElementById("conteudo");
 
     try {
-        // Esconde a auditoria temporariamente
         const auditoria = conteudo.querySelector("#auditoria");
         const h2Auditoria = auditoria ? auditoria.previousElementSibling : null;
 
         if (auditoria) auditoria.style.display = "none";
         if (h2Auditoria) h2Auditoria.style.display = "none";
 
-        // Gera o canvas
         const canvas = await html2canvas(conteudo, {
             scale: 2.5,
             useCORS: true,
@@ -357,17 +410,11 @@ async function gerarPDF() {
             logging: false
         });
 
-        // Restaura a auditoria
         if (auditoria) auditoria.style.display = "";
         if (h2Auditoria) h2Auditoria.style.display = "";
 
-        // ==================== GERA PDF ====================
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: "portrait",
-            unit: "mm",
-            format: "a4"
-        });
+        const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
@@ -376,42 +423,22 @@ async function gerarPDF() {
         const imgHeight = canvas.height;
         const ratio = Math.min(pageWidth / imgWidth, (pageHeight * 0.86) / imgHeight);
 
-        const finalWidth = imgWidth * ratio;
-        const finalHeight = imgHeight * ratio;
-
-        // Adiciona conteúdo principal
         pdf.addImage(canvas.toDataURL("image/jpeg", 0.95), 'JPEG', 
-                    (pageWidth - finalWidth) / 2, 20, finalWidth, finalHeight);
+                    (pageWidth - imgWidth * ratio) / 2, 20, imgWidth * ratio, imgHeight * ratio);
 
-        // ==================== RODAPÉ PROFISSIONAL ====================
         const agora = new Date();
-        const dataFormatada = agora.toLocaleDateString('pt-BR', { 
-            day: '2-digit', 
-            month: '2-digit', 
-            year: 'numeric' 
-        });
-        const horaFormatada = agora.toLocaleTimeString('pt-BR', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-        });
+        const dataFormatada = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const versao = "v1.0.0";
 
         pdf.setFont("helvetica", "normal");
         pdf.setTextColor(100);
-
-        // Versão (você pode alterar facilmente)
-        const versao = "v1.0.0";
-
-        // Primeira linha - Data, Hora e Versão
         pdf.setFontSize(9);
-        const linha1 = `Gerado em: ${dataFormatada} às ${horaFormatada} • ${versao}`;
-        pdf.text(linha1, pageWidth / 2, pageHeight - 13, { align: "center" });
+        pdf.text(`Gerado em: ${dataFormatada} às ${horaFormatada} • ${versao}`, pageWidth / 2, pageHeight - 13, { align: "center" });
 
-        // Segunda linha - Crédito
         pdf.setFontSize(8);
-        const linha2 = "Idealizado e desenvolvido por Angllys Bandeira Soares • Delphi Developer";
-        pdf.text(linha2, pageWidth / 2, pageHeight - 8, { align: "center" });
+        pdf.text("Idealizado e desenvolvido por Angllys Bandeira Soares • Delphi Developer", pageWidth / 2, pageHeight - 8, { align: "center" });
 
-        // Linha separadora
         pdf.setDrawColor(180);
         pdf.line(20, pageHeight - 16, pageWidth - 20, pageHeight - 16);
 
@@ -423,20 +450,27 @@ async function gerarPDF() {
     }
 }
 
-// Função auxiliar para carregar imagem
-function loadImage(url) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = url;
-    });
+// ==================== DARK MODE ====================
+function toggleDarkMode() {
+    document.documentElement.classList.toggle('dark-mode');
+    const isDark = document.documentElement.classList.contains('dark-mode');
+    const btn = document.getElementById('btnDarkMode');
+    btn.innerHTML = isDark ? '☀️' : '🌙';
+    localStorage.setItem('darkMode', isDark);
 }
 
-window.onload=function(){
-["rendimentos","inss","inssMulti","pensao","isencao","irrfOutros"]
-.forEach(id=>mask(el(id)));
+function loadDarkMode() {
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.classList.add('dark-mode');
+        document.getElementById('btnDarkMode').innerHTML = '☀️';
+    }
+}
+
+window.onload = function(){
+    ["rendimentos","inss","inssMulti","pensao","isencao","irrfOutros"]
+    .forEach(id => mask(el(id)));
+    
+    loadDarkMode();
 };
 
 </script>
